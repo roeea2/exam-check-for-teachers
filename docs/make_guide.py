@@ -79,15 +79,16 @@ BODY = f"""
   <div class="steps">
     <div>
       <div class="step"><span class="n">1</span><div><b class="h">מתקינים פעם אחת.</b> פותחים את Claude Code בתיקייה של הפרויקט שלכם, ומדביקים את הודעת ההתקנה שבתיבה למטה.</div></div>
-      <div class="step"><span class="n">2</span><div><b class="h">שמים מבחן ופתרונות בתיקייה.</b> את המבחן בתיקייה עצמה, ואת העבודות בתת-תיקייה <b>פתרונות</b>: קובץ PDF לכל תלמיד, או תיקייה עם הצילומים שלו.<br>
+      <div class="step"><span class="n">2</span><div><b class="h">שמים מבחן, דף נוסחאות ופתרונות בתיקייה.</b> הסקיל יכול לפתוח לכם אותה. את המבחן ואת דף הנוסחאות בתיקייה עצמה, ואת העבודות בתת-תיקייה <b>פתרונות</b>: קובץ PDF לכל תלמיד, או תיקייה עם הצילומים שלו.<br>
         <span class="small">סריקה, צילום מהטלפון או CamScanner, הכול עובד. מחוון משלכם לא חובה.</span></div></div>
-      <div class="step"><span class="n">3</span><div><b class="h">מבקשים בדיקה.</b> כותבים למשל "תבדוק את המבחנים בתיקייה מבחן חשמל", עונים על כמה שאלות קצרות (מחוון, ואיך להוריד נקודות), ומקבלים הכול בדוק.</div></div>
+      <div class="step"><span class="n">3</span><div><b class="h">מבקשים בדיקה.</b> כותבים למשל "תבדוק את המבחנים בתיקייה מבחן חשמל", עונים על כמה שאלות קצרות (איפה הקבצים, מחוון, ואיך להוריד נקודות), ומקבלים הכול בדוק.</div></div>
     </div>
     <div class="tree">
       <div class="cap">כך נראית התיקייה:</div>
       <div class="row">{FOLDER}<b>מבחן חשמל</b> <span class="mute">(תיקייה לכל מבחן)</span></div>
       <div class="row in1">{FILE}<span class="hl">מבחן</span> <span class="pill">המבחן עצמו</span></div>
       <div class="row in1">{FILE}מחוון <span class="mute">(לא חובה)</span></div>
+      <div class="row in1">{FILE}דף נוסחאות <span class="mute">(מומלץ)</span></div>
       <div class="row in1">{FOLDER}<span class="hl">פתרונות</span> <span class="pill">העבודות של התלמידים</span></div>
       <div class="row in2">{FILE}דני כהן</div>
       <div class="row in2">{FOLDER}נועה לוי <span class="mute">(צילומים)</span></div>
@@ -119,7 +120,7 @@ BODY = f"""
   <div class="card">
     <h2>חשוב לדעת</h2>
     <ul>
-      <li>לפני הבדיקה הסקיל שואל איך להוריד נקודות (חוסר נימוק, טעות חישוב, יחידות), ובונה מחוון מאומת שאפשר לאשר</li>
+      <li>לפני הבדיקה הסקיל שואל איך להוריד נקודות (חוסר נימוק, טעות חישוב, נוסחה שלא מדף הנוסחאות, <span style="white-space:nowrap;direction:ltr;unicode-bidi:isolate">g = 9.8</span>), ובונה מחוון מאומת שאפשר לאשר</li>
       <li>ציון ה-AI הוא הערכה לפי דרך הפתרון, לא הוכחה</li>
       <li>רוצים לשנות? "בשאלה 2א תוריד רק נקודה לכולם", והכול נבנה מחדש</li>
     </ul>

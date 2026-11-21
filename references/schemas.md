@@ -5,7 +5,8 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
 
 ## files.json and pages.json (written by the scripts)
 
-`find_exam.py` writes `files.json`: `exam.files`, `exam.text_layer`, `key.files`, and `students`, each with
+`find_exam.py` writes `files.json`: `exam.files`, `exam.text_layer`, `key.files`, `formulas.files` (the formula
+sheet, any file with "נוסחאות" in its name), and `students`, each with
 `id` (s01, s02 ...), `name` (empty when the file name is generic, then read it from the first page), `label`
 (file or folder name) and `files`. `prepare_pages.py` writes `pages.json`: document id to page images.
 
@@ -22,10 +23,12 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
     "rules": [
       {"case": "חוסר נימוק כשהשאלה ביקשה לנמק", "deduct": "חצי מהסעיף"},
       {"case": "טעות חישוב כשהדרך נכונה", "deduct": "נקודה אחת"},
+      {"case": "לא התחיל מהנוסחה כפי שהיא בדף הנוסחאות", "deduct": "נקודה אחת בכל סעיף"},
+      {"case": "שימוש ב-g = 9.8 במקום 10", "deduct": "נקודה אחת בכל סעיף שבו הוצב"},
       {"case": "יחידות חסרות או שגויות בתשובה הסופית", "deduct": "חצי נקודה"},
       {"case": "טעות נגררת", "deduct": "רק במקום שבו נעשתה"},
       {"case": "תשובה סופית נכונה בלי דרך", "deduct": "חצי מהסעיף"},
-      {"case": "מספר, נוסחה או צעד בלי הסבר", "deduct": "נקודה אחת"}
+      {"case": "מספר או צעד בלי הסבר", "deduct": "נקודה אחת"}
     ],
     "summary": "כללי ההורדה שבחר/ה המורה לפני הבדיקה. מקרים אחרים לפי טבלת ברירת המחדל."
   },
@@ -34,6 +37,7 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
      "parts": [
        {"part": "א", "max": 8,
         "answer": "Q = 8.33·10⁻⁹ C ,  r_B = 0.1 m",
+        "start_formula": "V = kQ/r (בתוך מוליך: V = kQ/R), E = kQ/r²",
         "method": "V בתוך מוליך שווה ל-V על פניו: 1500 = kQ/0.05. אחר כך 7500 = kQ/r²",
         "full_credit": "נימוק שהפוטנציאל בתוך המוליך קבוע, הצבה נכונה, יחידות",
         "common_deductions": [{"reason": "חסר נימוק לפוטנציאל בתוך המוליך", "points": -2},
@@ -51,7 +55,8 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
   the teacher wants a carried-forward error deducted in every part. `report.py key` prints the rules.
 * `common_deductions` grows while you grade: the same mistake gets the same deduction for every student, and
   its points must follow `policy.rules`.
-* `answer` holds the final values; keep the computation that proves them in `key_check.py` next to it.
+* `answer` holds the final values (with the formula sheet's constants, g = 10); keep the computation that proves
+  them in `key_check.py` next to it. `start_formula`: the formula-sheet formula(s) a full answer starts from.
 
 ## <id>.json, one per student (you or a grader subagent write it)
 

@@ -6,8 +6,11 @@ Every grade depends on the key, so an error there repeats for every student.
 
 1. Read the whole exam: `נתונים/exam.txt` for a typed exam, and the page images `עמודים/exam/` for the figures.
    Note the points of every part, the "choose N of M" instruction, the given data, and every figure.
-2. Solve every question part by part, the way the class learned it. Compute every number in a small Python file
-   `נתונים/key_check.py` (assert each final value) so arithmetic slips cannot enter the key.
+2. Solve every question part by part, the way the class learned it, starting every calculation from a formula as
+   it is printed on the formula sheet (`נתונים/formulas.txt` and `עמודים/formulas/`; without one, the exam's formula
+   box, else the standard Ministry of Education sheet for the subject) and using the sheet's constants (g = 10
+   unless the sheet says otherwise). Write that formula in the part's `start_formula`. Compute every number in a
+   small Python file `נתונים/key_check.py` (assert each final value) so arithmetic slips cannot enter the key.
 3. If the teacher gave a key (`מחוון.pdf`), use it: transcribe it into key.json, still recompute the numbers, and
    tell the teacher about any value you think is wrong instead of silently changing it.
 4. Independent check: give one subagent only the exam pages and ask it to solve every part (no key, no student
@@ -25,6 +28,14 @@ Every grade depends on the key, so an error there repeats for every student.
   ("על הדפים כבר יש סימוני מורה") and grade independently.
 * If something is unreadable, do not guess in the student's disfavor: grade what you can read and add a flag
   ("עמוד 5 שורות 3-4 לא קריאות, לבדיקת המורה").
+* Starting formula: for every calculation, check that the student first wrote a formula as it appears on the
+  formula sheet and only then rearranged or substituted. Printed variants that are both on the sheet count (σ/2ε₀
+  and 2πkσ, since ε₀ = 1/4πk is printed too). A rearranged form written straight away (σ = E·ε₀, Q = V·r/k,
+  r² = kQ/E) or a ready-made combination (a = g − qE/m instead of starting from ΣF = ma) does not. Reading a slope
+  off a graph is not a formula and is not penalized. Without the class's own sheet, apply this only to clear cases
+  and say so in `flags`.
+* g: note every part where the student substituted 9.8 (or another value) instead of the sheet's 10. A later part
+  that only reuses a result computed with 9.8 is an error carried forward, not a new 9.8 deduction.
 
 ## 3. Points
 
@@ -40,7 +51,9 @@ section 2). For every case the teacher was not asked about, or answered "(מומ
 | The explanation asked for ("נמקו", "הסבירו") is missing | half of the part |
 | Arithmetic slip, method correct | 1 point |
 | Missing or wrong units in the final answer | 0.5 point |
-| A number, formula or step without saying where it came from | 1 point |
+| Did not start from the formula as printed on the formula sheet | 1 point per part |
+| Used g = 9.8 instead of 10 (the formula sheet's value) | 1 point in each part where 9.8 was substituted |
+| A number or step without saying where it came from | 1 point |
 | Error carried forward from an earlier part | only where it was made |
 | Correct final answer with no work or calculation | half of the part |
 | Wrong sign or direction when the question asks for it | 1-2 points |
@@ -80,6 +93,7 @@ then validate and spot-check. Prompt template:
 You are grading one student's Hebrew physics exam for a teacher. Work only from these files:
   exam text:      <folder>/בדיקה/נתונים/exam.txt  (may be missing for a scanned exam)
   exam pages:     <folder>/בדיקה/עמודים/exam/p01.jpg ...
+  formula sheet:  <folder>/בדיקה/נתונים/formulas.txt and עמודים/formulas/ (if the teacher gave one)
   answer key:     <folder>/בדיקה/נתונים/key.json   (points, answers, the teacher's deduction rules, common deductions)
   student pages:  <folder>/בדיקה/עמודים/<id>/p01.jpg ...  and locator grids grid-p01.png ...
 Read <skill>/references/grading.md, <skill>/references/marking.md, <skill>/references/ai-detection.md and

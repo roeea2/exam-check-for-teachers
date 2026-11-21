@@ -1,12 +1,14 @@
 """Find the exam, the optional answer key, and every student's pages in an exam folder.
 
-    python3 find_exam.py "<exam folder>" [--exam FILE] [--key FILE]
+    python3 find_exam.py "<exam folder>" [--exam FILE] [--key FILE] [--formulas FILE]
+    python3 find_exam.py "<new exam folder>" --create     make the folder (and פתרונות/) for the teacher to fill
 
 Layout the teacher is asked to use (see SKILL.md):
 
     <exam folder>/
         מבחן.pdf                 the exam (PDF, Word, or photos named מבחן 1.jpg, מבחן 2.jpg ...)
         מחוון.pdf                optional: the teacher's own solution / rubric
+        דף נוסחאות.pdf           recommended: the formula sheet the class uses (deductions follow it)
         פתרונות/                 the students' work, any name works for this folder
             דני כהן.pdf           one PDF per student (scan) ...
             נועה לוי/             ... or one folder of photos per student
@@ -24,6 +26,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import DOC_EXT, IMAGE_EXT, OUT_DIR, data_dir, save_json  # noqa: E402
 
+FORMULA_RX = re.compile(r"נוסחא|נוסחאות|נוסחות|formula", re.I)
 KEY_RX = re.compile(r"מחוון|פתרון\s*(?:של\s*)?ה?מורה|תשובות\s*ה?מורה|פתרון\s*מלא|answer[\s_-]*key|rubric|solution", re.I)
 EXAM_RX = re.compile(r"מבחן|בוחן|שאלון|exam|test|quiz", re.I)
 CONTAINER_RX = re.compile(r"פתרונות|תלמידים|סריקות|מחברות|עבודות|solutions|students|scans|answers", re.I)
@@ -94,8 +97,20 @@ def main():
     ap.add_argument("folder")
     ap.add_argument("--exam", action="append", help="the exam file (repeat for several photos)")
     ap.add_argument("--key", action="append", help="the teacher's answer key file(s)")
+    ap.add_argument("--formulas", action="append", help="the formula sheet file(s)")
+    ap.add_argument("--create", action="store_true", help="create the folder layout for the teacher and stop")
     a = ap.parse_args()
+    if not a.folder.strip():
+        raise SystemExit("give the exam folder path")
     folder = Path(a.folder).resolve()
+    if a.create:
+        if (Path(__file__).resolve().parent.parent) in [folder, *folder.parents]:
+            raise SystemExit("refusing to create an exam folder inside the skill itself")
+        (folder / "פתרונות").mkdir(parents=True, exist_ok=True)
+        print(f"created {folder}")
+        print(f"  put the exam or quiz and the formula sheet in: {folder}")
+        print(f"  put the students' scans (one PDF or one folder of photos each) in: {folder / 'פתרונות'}")
+        return
     if not folder.is_dir():
         raise SystemExit(f"not a folder: {folder}")
     warnings = []
@@ -103,11 +118,14 @@ def main():
     subdirs = sorted([p for p in folder.iterdir() if p.is_dir() and not p.name.startswith(".")
                       and p.name not in SKIP_DIRS], key=natural_key)
 
-    key = [Path(k).resolve() for k in a.key] if a.key else [p for p in top_docs if KEY_RX.search(p.stem)]
+    formulas = ([Path(f).resolve() for f in a.formulas] if a.formulas
+                else [p for p in top_docs if FORMULA_RX.search(p.stem)])
+    key = ([Path(k).resolve() for k in a.key] if a.key
+           else [p for p in top_docs if KEY_RX.search(p.stem) and p not in formulas])
     if a.exam:
         exam = [Path(e).resolve() for e in a.exam]
     else:
-        named = [p for p in top_docs if EXAM_RX.search(p.stem) and p not in key]
+        named = [p for p in top_docs if EXAM_RX.search(p.stem) and p not in key and p not in formulas]
         typed = [p for p in named if has_text_layer(p)]
         named_imgs = [p for p in named if p.suffix.lower() in IMAGE_EXT]
         if typed:
@@ -117,13 +135,13 @@ def main():
         elif named:
             exam = named[:1]
         else:
-            rest = [p for p in top_docs if p not in key]
+            rest = [p for p in top_docs if p not in key and p not in formulas]
             exam = rest[:1] if (subdirs and len(rest) >= 1) or len(rest) == 1 else []
     if not exam:
         warnings.append("No exam file found. Ask the teacher which file is the exam and rerun with --exam.")
 
     students = []
-    loose = [p for p in top_docs if p not in exam and p not in key]
+    loose = [p for p in top_docs if p not in exam and p not in key and p not in formulas]
     if loose:
         students += students_in_list(loose, warnings)
     for d in subdirs:
@@ -140,6 +158,7 @@ def main():
         "folder": str(folder),
         "exam": {"files": [rel(p) for p in exam], "text_layer": bool(exam) and has_text_layer(exam[0])},
         "key": {"files": [rel(p) for p in key]},
+        "formulas": {"files": [rel(p) for p in formulas], "text_layer": bool(formulas) and has_text_layer(formulas[0])},
         "students": [{"id": f"s{i:02d}", "name": s["name"], "label": s["label"], "name_from_page": s["name_from_page"],
                       "files": [rel(f) for f in s["files"]]} for i, s in enumerate(students, 1)],
         "warnings": warnings,
@@ -149,6 +168,7 @@ def main():
     print(f"exam:     {', '.join(result['exam']['files']) or '(not found)'}"
           f"{'  [text layer]' if result['exam']['text_layer'] else ''}")
     print(f"key:      {', '.join(result['key']['files']) or '(none: build one)'}")
+    print(f"formulas: {', '.join(result['formulas']['files']) or '(no formula sheet: use the exam\'s formula box or ask the teacher)'}")
     print(f"students: {len(students)}")
     for s in result["students"]:
         who = s["name"] or f"(name from the first page; file: {s['label']})"

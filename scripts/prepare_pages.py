@@ -7,7 +7,7 @@ Needs files.json from find_exam.py. For each document (exam, key, s01, s02 ...) 
 phone photos are copied, HEIC/TIFF are converted with macOS sips) and, unless --no-grid,
 grid-p01.png ...: the same page with a percent grid (x from the left edge, y from the top edge, 0-100).
 Read the grid images to give every mark its box in percent; annotate.py draws on the same frame.
-Also writes נתונים/pages.json and, for a typed exam, נתונים/exam.txt.
+Also writes נתונים/pages.json and, for a typed exam or formula sheet, נתונים/exam.txt / formulas.txt.
 """
 import argparse
 import shutil
@@ -131,6 +131,8 @@ def main():
         docs["exam"] = files["exam"]["files"]
     if files["key"]["files"]:
         docs["key"] = files["key"]["files"]
+    if files.get("formulas", {}).get("files"):
+        docs["formulas"] = files["formulas"]["files"]
     for s in files["students"]:
         docs[s["id"]] = s["files"]
     if a.only:
@@ -147,6 +149,13 @@ def main():
         print(f"{doc_id:6} {len(pages):3} page(s)")
     save_json(pages_json, index)
 
+    for doc in ("formulas",):
+        if doc in rendered and files.get(doc, {}).get("text_layer"):
+            src = folder / files[doc]["files"][0]
+            if src.suffix.lower() == ".pdf":
+                txt = subprocess.run(["pdftotext", "-layout", str(src), "-"], capture_output=True, text=True).stdout
+                (data_dir(folder) / f"{doc}.txt").write_text(txt, encoding="utf-8")
+                print(f"wrote {doc}.txt (the formula sheet's text layer)")
     if "exam" in rendered and files["exam"]["text_layer"]:
         exam_src = folder / files["exam"]["files"][0]
         if exam_src.suffix.lower() == ".pdf":
@@ -155,7 +164,7 @@ def main():
             print("wrote exam.txt (the exam's text layer)")
 
     if not a.no_grid:
-        grid_ids = [d for d in rendered if d not in ("exam", "key")]
+        grid_ids = [d for d in rendered if d not in ("exam", "key", "formulas")]
         with ThreadPoolExecutor(max_workers=min(a.jobs, 3)) as ex:
             for doc_id, grids in zip(grid_ids, ex.map(lambda d: render_grid(folder, d, rendered[d]), grid_ids)):
                 print(f"{doc_id:6} {len(grids):3} locator grid(s)")

@@ -154,6 +154,7 @@ def key_pdf(folder):
         for p in q.get("parts", []):
             ded = "".join(f"<li><span class='num'>{esc(fmt(d['points']))}</span> {esc(d['reason'])}</li>" for d in p.get("common_deductions", []))
             parts.append(f"""<div class="part"><b>סעיף {esc(p['part'])}</b> ({fmt(p['max'])} נק'): {esc(p.get('answer', ''))}
+  {f"<div>מתחילים מהנוסחה: <span class='num'>{esc(p['start_formula'])}</span></div>" if p.get('start_formula') else ""}
   {f"<div>דרך: {esc(p['method'])}</div>" if p.get('method') else ""}
   {f"<div>לניקוד מלא: {esc(p['full_credit'])}</div>" if p.get('full_credit') else ""}
   {f"<div class='small'>הורדות אופייניות:<ul>{ded}</ul></div>" if ded else ""}</div>""")

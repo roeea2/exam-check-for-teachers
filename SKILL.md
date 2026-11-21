@@ -22,6 +22,7 @@ or names anywhere, and if the workspace is a git repository make sure the exam f
 <exam folder>/
 ├── מבחן.pdf              the exam (PDF, Word, or photos named מבחן 1.jpg, מבחן 2.jpg)
 ├── מחוון.pdf             optional: the teacher's own solution or rubric
+├── דף נוסחאות.pdf        recommended: the class's formula sheet (deductions follow it)
 └── פתרונות/              the students' work, one PDF or one folder of photos per student
     ├── דני כהן.pdf
     ├── נועה לוי/  (photos)
@@ -30,44 +31,68 @@ or names anywhere, and if the workspace is a git repository make sure the exam f
 
 Student files lying next to the exam also work. All output goes to `<exam folder>/בדיקה/`.
 
-## 1. Find and prepare the files
+## 1. Ask first: the files, then how to grade
 
-If you do not know the folder, look for one with an exam and students' work in the workspace, or ask for it.
-
-```
-python3 scripts/find_exam.py "<exam folder>"        # exam, key, students -> בדיקה/נתונים/files.json
-python3 scripts/prepare_pages.py "<exam folder>"    # page images + locator grids (in the background for big classes)
-```
-
-Read the warnings. If the exam was not found or photos cannot be grouped by student, ask the teacher (or rerun
-with `--exam FILE`). Look at the exam's first page to see whether it says "choose N of M". Tell the teacher in one
-line how many students were found.
-
-## 2. Ask the teacher how to grade, before reading any student's work
-
-A grade is only as fair as its rules, and the rules are the teacher's call. Ask in two AskUserQuestion calls, in
-Hebrew, before you grade anything; skip only what the teacher already said. Each question offers the usual rule
-first, marked "(מומלץ)", and the teacher can type a rule of their own in "Other" (for example "חוסר נימוק: 2 נקודות").
+Ask in three AskUserQuestion calls, in Hebrew, before you read any student's work. Skip only what the teacher
+already said (for example, a folder named in the request that already holds everything). The usual answer comes
+first, marked "(מומלץ)"; the teacher can type their own in "Other" (for example "חוסר נימוק: 2 נקודות").
 
 Round 1:
-1. "יש מחוון (פתרון של המורה)?": "לא, תבנה מחוון ותראה לי לפני הבדיקה (מומלץ)" / "לא, תבנה ותבדוק בלי
-   לעצור" / "כן, הוא בתיקייה" (put this one first when find_exam.py found a key).
-2. "כמה להוריד כשחסר נימוק בסעיף שביקש לנמק?": "חצי מהסעיף (מומלץ)" / "רבע מהסעיף" / "את כל הסעיף".
-3. "כמה להוריד על טעות חישוב כשהדרך נכונה?": "נקודה אחת (מומלץ)" / "2 נקודות" / "רבע מהסעיף".
-4. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר
-   (מומלץ)" / "לספור את הראשונות לפי הסדר במחברת". Otherwise ask round 2's first question here.
+1. "איפה המבחן, דף הנוסחאות והמבחנים הסרוקים?": "תפתח לי תיקייה ואשים בה הכול (מומלץ)" / "הכול כבר בתיקייה
+   אחת (אכתוב את שמה)" / "אכתוב איפה כל קובץ נמצא".
+2. "יש מחוון (פתרון של המורה)?": "לא, תבנה מחוון ותראה לי לפני הבדיקה (מומלץ)" / "לא, תבנה ותבדוק בלי
+   לעצור" / "כן, אשים אותו בתיקייה עם המבחן".
+3. "כמה להוריד כשחסר נימוק בסעיף שביקש לנמק?": "חצי מהסעיף (מומלץ)" / "רבע מהסעיף" / "את כל הסעיף".
+4. "כמה להוריד על טעות חישוב כשהדרך נכונה?": "נקודה אחת (מומלץ)" / "2 נקודות" / "רבע מהסעיף".
+
+Then get the files in place (answer to question 1):
+* "תפתח לי תיקייה": pick a short Hebrew name from the request (subject and class), run
+  `python3 scripts/find_exam.py "<workspace>/בדיקת מבחנים/<name>" --create`, and write to the teacher:
+  "פתחתי תיקייה: <the full path>. שימו בה את המבחן או הבוחן ואת דף הנוסחאות (קובץ שיש בשמו המילה
+  "נוסחאות"), ובתת-התיקייה פתרונות את המבחנים הסרוקים: קובץ PDF לכל תלמיד, או תיקייה עם הצילומים שלו בשם
+  התלמיד. כתבו לי כשסיימתם." Wait for the answer.
+* "הכול כבר בתיקייה": use the folder the teacher names.
+* "אכתוב איפה כל קובץ נמצא": the teacher types the paths or drags the files into this window. Create a folder
+  with `--create` and copy them in: the exam and the formula sheet at the top, the scans into `פתרונות/`.
+
+If the workspace is a git repository, add the exam folder to its .gitignore before any student file lands there.
+Then run step 2, and only after it ask rounds 2 and 3.
 
 Round 2:
-1. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
-2. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
+1. "תלמיד שלא התחיל מהנוסחה כפי שהיא מופיעה בדף הנוסחאות (הציב ישר בנוסחה מסודרת מחדש)": "נקודה אחת בכל
+   סעיף (מומלץ)" / "חצי נקודה בכל סעיף" / "לא להוריד".
+2. "שימוש ב-g = 9.8 במקום 10 (הערך שבדף הנוסחאות)": "נקודה אחת בכל סעיף שבו הוצב (מומלץ)" / "נקודה אחת,
+   פעם אחת בכל המבחן" / "לא להוריד".
+3. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
+4. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
    סעיף שבו היא מופיעה".
-3. "תשובה סופית נכונה בלי דרך או חישוב": "חצי מהסעיף (מומלץ)" / "ניקוד מלא" / "אפס".
-4. "מספר, נוסחה או צעד בלי הסבר מאיפה הגיעו": "נקודה אחת (מומלץ)" / "לא להוריד".
+
+Round 3:
+1. "תשובה סופית נכונה בלי דרך או חישוב": "חצי מהסעיף (מומלץ)" / "ניקוד מלא" / "אפס".
+2. "מספר או צעד בלי הסבר מאיפה הגיעו": "נקודה אחת (מומלץ)" / "לא להוריד".
+3. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר
+   (מומלץ)" / "לספור את הראשונות לפי הסדר במחברת".
 
 Write the answers into key.json `policy` (`rules`, `extra_questions`, `carry_forward`; references/schemas.md),
 confirm them to the teacher in two or three Hebrew lines, and apply them to every student. Cases the teacher was
 not asked about follow the default table in references/grading.md section 3. The AI check always runs; it is part
 of every report.
+
+## 2. Find and prepare the files
+
+```
+python3 scripts/find_exam.py "<exam folder>"        # exam, formula sheet, key, students -> בדיקה/נתונים/files.json
+python3 scripts/prepare_pages.py "<exam folder>"    # page images + locator grids (in the background for big classes)
+```
+
+Tell the teacher in one or two Hebrew lines what was found: the exam, the formula sheet, the key, how many
+students. Ask for anything missing before going on:
+* no exam: which file it is (rerun with `--exam FILE`);
+* no formula sheet: add it to the folder, or confirm the exam's own formula box or the standard Ministry of
+  Education sheet for the subject (then the formula-sheet rule applies only to clear cases);
+* photos that cannot be grouped by student: put each student's photos in a folder named after the student.
+
+Look at the exam's first page to see whether it says "choose N of M" (for round 3).
 
 ## 3. Build and verify the key
 
@@ -114,7 +139,8 @@ everyone), rerun `annotate.py` for the affected students and `report.py summary`
 
 ## Files in this skill
 
-* `scripts/find_exam.py`: find the exam, the key and each student's files.
+* `scripts/find_exam.py`: find the exam, the formula sheet, the key and each student's files; `--create` opens a new
+  exam folder (with `פתרונות/`) for the teacher to fill.
 * `scripts/prepare_pages.py`: page images (any scan size, photos, HEIC, Word) and percent locator grids.
 * `scripts/annotate.py`: validate a grading JSON and build the marked PDF (cover page, circled errors, talk questions).
 * `scripts/report.py`: class summary PDF and CSV, and the key as a PDF.
