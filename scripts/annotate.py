@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import (FONTS, PAGE_CSS, data_dir, esc, fmt, html_to_pdf, load_json, out_dir,  # noqa: E402
+from common import (FONTS, PAGE_CSS, bidi, data_dir, esc, fmt, html_to_pdf, load_json, out_dir,  # noqa: E402
                     pages_dir, safe_name)
 
 AI_LEVELS = [(20, "נמוך מאוד"), (40, "נמוך"), (60, "לא חד-משמעי"), (80, "גבוה"), (100, "גבוה מאוד")]
@@ -174,12 +174,12 @@ def page_overlay(st, page_no):
                 if kind == "deduct":
                     items.append(f'<div class="mk" style="left:{x}%;top:{y}%;width:{w}%;height:{h}%"></div>')
                     items.append(f'<div class="lb" style="{label_css(m["box"], m.get("label_at"), width=m.get("label_w"))}">'
-                                 f'<span class="p">{esc("−" + fmt(abs(float(m["points"]))))}</span>{esc(m["reason"])}</div>')
+                                 f'<span class="p">{esc("−" + fmt(abs(float(m["points"]))))}</span>{bidi(m["reason"])}</div>')
                 elif kind == "ok":
                     items.append(f'<div class="ok" style="left:{x + w:.2f}%;top:{y + h / 2:.2f}%">✓</div>')
                 elif kind == "note":
                     items.append(f'<div class="nt" style="left:{x}%;top:{y}%;width:{w}%;height:{h}%"></div>')
-                    items.append(f'<div class="lb blue" style="{label_css(m["box"], m.get("label_at"))}">{esc(m.get("text", ""))}</div>')
+                    items.append(f'<div class="lb blue" style="{label_css(m["box"], m.get("label_at"))}">{bidi(m.get("text", ""))}</div>')
     for n in st.get("notes", []):
         if int(n.get("page", 0)) == page_no and "box" in n:
             x, y, w, h = n["box"]
@@ -187,7 +187,7 @@ def page_overlay(st, page_no):
                 items.append(f'<div class="ok" style="left:{x + w:.2f}%;top:{y + h / 2:.2f}%">✓</div>')
             else:
                 items.append(f'<div class="nt" style="left:{x}%;top:{y}%;width:{w}%;height:{h}%"></div>')
-                items.append(f'<div class="lb blue" style="{label_css(n["box"], n.get("label_at"))}">{esc(n.get("text", ""))}</div>')
+                items.append(f'<div class="lb blue" style="{label_css(n["box"], n.get("label_at"))}">{bidi(n.get("text", ""))}</div>')
     if page_no == 1:
         items.append(f'<div class="stamp">{esc(st["total"])}</div>')
     return "".join(items)
@@ -199,11 +199,11 @@ def cover(st, key):
     rows = []
     for q in sorted(st["questions"], key=lambda q: (q["q"] not in counted, counted.index(q["q"]) if q["q"] in counted else 0)):
         note = "" if q["q"] in counted else " (לא נספרה בציון)"
-        topic = f" · {esc(q['title'])}" if q.get("title") else ""
+        topic = f" · {bidi(q['title'])}" if q.get("title") else ""
         rows.append(f'<tr class="qrow"><td colspan="2">שאלה {esc(q["q"])}{topic}{note}</td>'
                     f'<td class="pts"><span class="num">{fmt(q["score"])} / {fmt(q["max"])}</span></td><td></td></tr>')
         for p in q.get("parts", []):
-            reasons = [f'<span class="num">{esc("−" + fmt(abs(float(m["points"]))))}</span> {esc(m["reason"])}'
+            reasons = [f'<span class="num">{esc("−" + fmt(abs(float(m["points"]))))}</span> {bidi(m["reason"])}'
                        for m in p.get("marks", []) if m.get("kind", "deduct") == "deduct"]
             full = abs(float(p["score"]) - float(p["max"])) < TOL
             rows.append(f'<tr><td></td><td>סעיף {esc(p["part"])}</td>'
@@ -211,7 +211,7 @@ def cover(st, key):
                         f'<td class="red">{"<br>".join(reasons) if reasons else ("✓" if full else "")}</td></tr>')
     ai = st.get("ai", {})
     sc = int(round(ai.get("score", 0)))
-    lst = lambda xs: "".join(f"<li>{esc(x)}</li>" for x in xs) or "<li>-</li>"
+    lst = lambda xs: "".join(f"<li>{bidi(x)}</li>" for x in xs) or "<li>-</li>"
     flags = st.get("flags", [])
     flags_html = (f'<div class="flags"><b>לבדיקת המורה:</b><ul>{lst(flags)}</ul></div>') if flags else ""
     who = esc(st.get("student") or st.get("label") or st.get("id"))
@@ -224,7 +224,7 @@ def cover(st, key):
   <table><tr><th style="width:22%">שאלה</th><th style="width:14%">סעיף</th><th>ניקוד</th><th>הורדות</th></tr>{"".join(rows)}</table>
   <div class="ai"><h2>חשד לשימוש בבינה מלאכותית: <span class="num">{sc} / 100</span> ({ai_level(sc)})</h2>
     <div class="bar"><i style="left:calc({sc}% - .6mm)"></i></div>
-    <div>{esc(ai.get("summary", ""))}</div>
+    <div>{bidi(ai.get("summary", ""))}</div>
     <div class="cols"><div><h3>סימנים לעבודה עצמית</h3><ul>{lst(ai.get("human_signs", []))}</ul></div>
       <div><h3>סימנים לשימוש ב-AI</h3><ul>{lst(ai.get("ai_signs", []))}</ul></div></div>
     <div class="small">זו הערכה לפי דרך הפתרון והכתיבה, לא הוכחה. בחשד גבוה מומלץ לברר בשיחה קצרה עם התלמיד/ה.</div>
@@ -236,7 +236,7 @@ def oral(st):
     qs = (st.get("ai") or {}).get("questions") or []
     if not qs:
         return ""
-    items = "".join(f"<li>{esc(x)}</li>" for x in qs)
+    items = "".join(f"<li>{bidi(x)}</li>" for x in qs)
     return f"""<section class="pg"><div class="oral" style="width:100%"><h1>שאלות לשיחה קצרה עם התלמיד/ה</h1>
   <div>שאלות על הצעדים והטעויות של התלמיד/ה עצמו/ה. מי שפתר/ה בעצמו/ה מסביר/ה אותן מיד.</div><ol>{items}</ol></div></section>"""
 

@@ -6,7 +6,7 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
 ## files.json and pages.json (written by the scripts)
 
 `find_exam.py` writes `files.json`: `exam.files`, `exam.text_layer`, `key.files`, `formulas.files` (the formula
-sheet, any file with "נוסחאות" in its name), and `students`, each with
+sheet, a file or a folder with "נוסחאות" or "נוסחאון" in its name), and `students`, each with
 `id` (s01, s02 ...), `name` (empty when the file name is generic, then read it from the first page), `label`
 (file or folder name) and `files`. `prepare_pages.py` writes `pages.json`: document id to page images.
 
@@ -55,7 +55,7 @@ sheet, any file with "נוסחאות" in its name), and `students`, each with
   the teacher wants a carried-forward error deducted in every part. `report.py key` prints the rules.
 * `common_deductions` grows while you grade: the same mistake gets the same deduction for every student, and
   its points must follow `policy.rules`.
-* `answer` holds the final values (with the formula sheet's constants, g = 10); keep the computation that proves
+* `answer` holds the final values (with the formula sheet's constants, and g = 10 unless told otherwise); keep the computation that proves
   them in `key_check.py` next to it. `start_formula`: the formula-sheet formula(s) a full answer starts from.
 
 ## <id>.json, one per student (you or a grader subagent write it)

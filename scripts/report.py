@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from annotate import ai_level  # noqa: E402
-from common import FONTS, data_dir, esc, fmt, html_to_pdf, load_json, out_dir  # noqa: E402
+from common import FONTS, bidi, data_dir, esc, fmt, html_to_pdf, load_json, out_dir  # noqa: E402
 
 CSS = """
 @page { size: A4; margin: 12mm 12mm 12mm 12mm; }
@@ -98,7 +98,7 @@ def summary(folder):
                         k = f"שאלה {q['q']}{p['part']}: {m['reason']}"
                         reasons[k] += 1
                         lost[k] += float(m["points"])
-    common = "".join(f"<tr><td>{esc(k)}</td><td class='c'>{n}</td><td class='c'><span class='num'>{fmt(lost[k] / n)}</span></td></tr>"
+    common = "".join(f"<tr><td>{bidi(k)}</td><td class='c'>{n}</td><td class='c'><span class='num'>{fmt(lost[k] / n)}</span></td></tr>"
                      for k, n in reasons.most_common(12))
 
     counts = [sum(1 for v in scores if lo <= v <= hi) for lo, hi, _ in BUCKETS]
@@ -121,7 +121,7 @@ def summary(folder):
                     f"<td class='c'><b>{esc(s['total'])}</b></td>{cells}<td class='c {cls}'><span class='num'>{ai}</span> ({ai_level(ai)})</td></tr>")
     flagged = [s for s in graded if s["ai"]["score"] > 40]
     flagged_html = "".join(f"<li><b>{esc(s.get('student') or s['id'])}</b>: <span class='num'>{int(round(s['ai']['score']))} / 100</span>. "
-                           f"{esc(s['ai'].get('summary', ''))}</li>" for s in flagged) or "<li>אין תלמידים עם חשד מעל 40.</li>"
+                           f"{bidi(s['ai'].get('summary', ''))}</li>" for s in flagged) or "<li>אין תלמידים עם חשד מעל 40.</li>"
     similar = [s for s in graded if s.get("similar_to")]
     similar_html = ("<h2>דמיון חריג בין תלמידים</h2><ul>" + "".join(
         f"<li><b>{esc(s.get('student') or s['id'])}</b> דומה ל: {esc(', '.join(s['similar_to']))}</li>" for s in similar)
@@ -152,24 +152,24 @@ def key_pdf(folder):
     for q in key["questions"]:
         parts = []
         for p in q.get("parts", []):
-            ded = "".join(f"<li><span class='num'>{esc(fmt(d['points']))}</span> {esc(d['reason'])}</li>" for d in p.get("common_deductions", []))
-            parts.append(f"""<div class="part"><b>סעיף {esc(p['part'])}</b> ({fmt(p['max'])} נק'): {esc(p.get('answer', ''))}
-  {f"<div>מתחילים מהנוסחה: <span class='num'>{esc(p['start_formula'])}</span></div>" if p.get('start_formula') else ""}
-  {f"<div>דרך: {esc(p['method'])}</div>" if p.get('method') else ""}
-  {f"<div>לניקוד מלא: {esc(p['full_credit'])}</div>" if p.get('full_credit') else ""}
+            ded = "".join(f"<li><span class='num'>{esc(fmt(d['points']))}</span> {bidi(d['reason'])}</li>" for d in p.get("common_deductions", []))
+            parts.append(f"""<div class="part"><b>סעיף {esc(p['part'])}</b> ({fmt(p['max'])} נק'): {bidi(p.get('answer', ''))}
+  {f"<div>מתחילים מהנוסחה: {bidi(p['start_formula'])}</div>" if p.get('start_formula') else ""}
+  {f"<div>דרך: {bidi(p['method'])}</div>" if p.get('method') else ""}
+  {f"<div>לניקוד מלא: {bidi(p['full_credit'])}</div>" if p.get('full_credit') else ""}
   {f"<div class='small'>הורדות אופייניות:<ul>{ded}</ul></div>" if ded else ""}</div>""")
-        topic = f" · {esc(q['topic'])}" if q.get("topic") else ""
+        topic = f" · {bidi(q['topic'])}" if q.get("topic") else ""
         qs.append(f'<div class="q"><h2 style="margin-top:0">שאלה {esc(q["q"])}{topic} ({fmt(q["max"])} נק\')</h2>{"".join(parts)}</div>')
     pol = key.get("policy", {})
-    notes = "".join(f"<li>{esc(n)}</li>" for n in key.get("notes", []))
+    notes = "".join(f"<li>{bidi(n)}</li>" for n in key.get("notes", []))
     rules = [(r.get("case", ""), r.get("deduct", "")) for r in pol.get("rules", [])]
     extra = {"best": "נספרות השאלות הטובות ביותר", "first": "נספרות השאלות הראשונות לפי הסדר"}.get(pol.get("extra_questions"))
     if extra:
         rules.append(("תלמיד שענה על יותר שאלות מהנדרש", extra))
     rules_html = ("<h2>כללי הורדת הניקוד</h2><table><tr><th>מצב</th><th>הורדה</th></tr>"
-                  + "".join(f"<tr><td>{esc(c)}</td><td>{esc(d)}</td></tr>" for c, d in rules) + "</table>") if rules else ""
+                  + "".join(f"<tr><td>{bidi(c)}</td><td>{bidi(d)}</td></tr>" for c, d in rules) + "</table>") if rules else ""
     body = f"""<h1>מחוון{(": " + esc(key.get('title'))) if key.get('title') else ""}</h1>
-<div class="sub">המחוון שלפיו נבדקו המבחנים. {esc(pol.get('summary', ''))}</div>
+<div class="sub">המחוון שלפיו נבדקו המבחנים. {bidi(pol.get('summary', ''))}</div>
 {rules_html}{f"<ul>{notes}</ul>" if notes else ""}{"".join(qs)}"""
     pdf = out_dir(folder) / "מחוון.pdf"
     html_to_pdf(f'<!doctype html><html lang="he"><head><meta charset="utf-8"><title>מחוון</title>{FONTS}'

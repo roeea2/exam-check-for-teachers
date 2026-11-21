@@ -8,7 +8,8 @@ Layout the teacher is asked to use (see SKILL.md):
     <exam folder>/
         מבחן.pdf                 the exam (PDF, Word, or photos named מבחן 1.jpg, מבחן 2.jpg ...)
         מחוון.pdf                optional: the teacher's own solution / rubric
-        דף נוסחאות.pdf           recommended: the formula sheet the class uses (deductions follow it)
+        דף נוסחאות.pdf           recommended: the formula sheet the class uses (deductions follow it);
+                                 a folder named נוסחאון / נוסחאות (or מחוון for the key) also works
         פתרונות/                 the students' work, any name works for this folder
             דני כהן.pdf           one PDF per student (scan) ...
             נועה לוי/             ... or one folder of photos per student
@@ -26,7 +27,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import DOC_EXT, IMAGE_EXT, OUT_DIR, data_dir, save_json  # noqa: E402
 
-FORMULA_RX = re.compile(r"נוסחא|נוסחאות|נוסחות|formula", re.I)
+FORMULA_RX = re.compile(r"נוסחא|נוסחאות|נוסחאון|נוסחות|formula", re.I)
+KEY_DIR_RX = re.compile(r"מחוון|answer[\s_-]*key|rubric", re.I)    # stricter than KEY_RX: "solutions" is students
 KEY_RX = re.compile(r"מחוון|פתרון\s*(?:של\s*)?ה?מורה|תשובות\s*ה?מורה|פתרון\s*מלא|answer[\s_-]*key|rubric|solution", re.I)
 EXAM_RX = re.compile(r"מבחן|בוחן|שאלון|exam|test|quiz", re.I)
 CONTAINER_RX = re.compile(r"פתרונות|תלמידים|סריקות|מחברות|עבודות|solutions|students|scans|answers", re.I)
@@ -122,6 +124,18 @@ def main():
                 else [p for p in top_docs if FORMULA_RX.search(p.stem)])
     key = ([Path(k).resolve() for k in a.key] if a.key
            else [p for p in top_docs if KEY_RX.search(p.stem) and p not in formulas])
+    # a folder named like the formula sheet (נוסחאון, דף נוסחאות) or the key (מחוון) holds that document,
+    # not a student's work
+    for d in list(subdirs):
+        inside = sorted([f for f in d.rglob("*") if is_doc(f)], key=natural_key)
+        if FORMULA_RX.search(d.name):
+            if not a.formulas:
+                formulas += inside
+            subdirs.remove(d)
+        elif KEY_DIR_RX.search(d.name):
+            if not a.key:
+                key += inside
+            subdirs.remove(d)
     if a.exam:
         exam = [Path(e).resolve() for e in a.exam]
     else:

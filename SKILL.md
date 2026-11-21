@@ -22,7 +22,7 @@ or names anywhere, and if the workspace is a git repository make sure the exam f
 <exam folder>/
 ├── מבחן.pdf              the exam (PDF, Word, or photos named מבחן 1.jpg, מבחן 2.jpg)
 ├── מחוון.pdf             optional: the teacher's own solution or rubric
-├── דף נוסחאות.pdf        recommended: the class's formula sheet (deductions follow it)
+├── דף נוסחאות.pdf        recommended: the class's formula sheet (or a folder named נוסחאון)
 └── פתרונות/              the students' work, one PDF or one folder of photos per student
     ├── דני כהן.pdf
     ├── נועה לוי/  (photos)
@@ -48,8 +48,8 @@ Round 1:
 Then get the files in place (answer to question 1):
 * "תפתח לי תיקייה": pick a short Hebrew name from the request (subject and class), run
   `python3 scripts/find_exam.py "<workspace>/בדיקת מבחנים/<name>" --create`, and write to the teacher:
-  "פתחתי תיקייה: <the full path>. שימו בה את המבחן או הבוחן ואת דף הנוסחאות (קובץ שיש בשמו המילה
-  "נוסחאות"), ובתת-התיקייה פתרונות את המבחנים הסרוקים: קובץ PDF לכל תלמיד, או תיקייה עם הצילומים שלו בשם
+  "פתחתי תיקייה: <the full path>. שימו בה את המבחן או הבוחן ואת דף הנוסחאות (קובץ או תיקייה שיש
+  בשמם "נוסחאות" או "נוסחאון"), ובתת-התיקייה פתרונות את המבחנים הסרוקים: קובץ PDF לכל תלמיד, או תיקייה עם הצילומים שלו בשם
   התלמיד. כתבו לי כשסיימתם." Wait for the answer.
 * "הכול כבר בתיקייה": use the folder the teacher names.
 * "אכתוב איפה כל קובץ נמצא": the teacher types the paths or drags the files into this window. Create a folder
@@ -61,7 +61,7 @@ Then run step 2, and only after it ask rounds 2 and 3.
 Round 2:
 1. "תלמיד שלא התחיל מהנוסחה כפי שהיא מופיעה בדף הנוסחאות (הציב ישר בנוסחה מסודרת מחדש)": "נקודה אחת בכל
    סעיף (מומלץ)" / "חצי נקודה בכל סעיף" / "לא להוריד".
-2. "שימוש ב-g = 9.8 במקום 10 (הערך שבדף הנוסחאות)": "נקודה אחת בכל סעיף שבו הוצב (מומלץ)" / "נקודה אחת,
+2. "שימוש ב-g = 9.8 במקום 10 (הערך המקובל בכיתה)": "נקודה אחת בכל סעיף שבו הוצב (מומלץ)" / "נקודה אחת,
    פעם אחת בכל המבחן" / "לא להוריד".
 3. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
 4. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
@@ -88,7 +88,7 @@ python3 scripts/prepare_pages.py "<exam folder>"    # page images + locator grid
 Tell the teacher in one or two Hebrew lines what was found: the exam, the formula sheet, the key, how many
 students. Ask for anything missing before going on:
 * no exam: which file it is (rerun with `--exam FILE`);
-* no formula sheet: add it to the folder, or confirm the exam's own formula box or the standard Ministry of
+* no formula sheet: add it to the folder (a file or folder with "נוסחאות" or "נוסחאון" in its name), or confirm the exam's own formula box or the standard Ministry of
   Education sheet for the subject (then the formula-sheet rule applies only to clear cases);
 * photos that cannot be grouped by student: put each student's photos in a folder named after the student.
 

@@ -48,6 +48,36 @@ def esc(s):
     return html.escape(str(s), quote=True)
 
 
+_SYM = "A-Za-z0-9½¼¾⅓√∞αβγδεηθκλμνπρστφωΔΣΩΦ₀₁₂₃₄₅₆₇₈₉"           # letters, digits, Greek, fractions
+_TOK = rf"[{_SYM}][{_SYM}_.,′'²³⁻⁰¹⁴⁵⁶⁷⁸⁹()|/·]*"
+LTR_RUN = re.compile(_TOK + r"(?:(?:\s*[=+\-−·×/<>≈]\s*[+\-−]?|[ \t]+)" + _TOK + r")*")
+
+
+def _trim(run):
+    """Leave sentence punctuation and an unmatched closing parenthesis outside the formula."""
+    while run and (run[-1] in ".,;:" or (run[-1] == ")" and run.count("(") < run.count(")"))):
+        run = run[:-1]
+    return run
+
+
+def bidi(s):
+    """Escape text for Hebrew HTML and wrap every formula or Latin/number run in a left-to-right isolate,
+    so "g=9.8" or "σ = E·ε₀" inside a Hebrew sentence is not shown reversed (as "9.8=g")."""
+    s = str(s)
+    out, last = [], 0
+    for m in LTR_RUN.finditer(s):
+        if m.start() < last:
+            continue
+        run = _trim(m.group())
+        if not run:
+            continue
+        out.append(esc(s[last:m.start()]))
+        out.append(f'<span class="num">{esc(run)}</span>')
+        last = m.start() + len(run)
+    out.append(esc(s[last:]))
+    return "".join(out)
+
+
 def fmt(x):
     """Points as the teacher writes them: 7, 4.33, 0.5 (no trailing zeros)."""
     x = round(float(x), 2)

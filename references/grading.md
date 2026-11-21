@@ -8,8 +8,8 @@ Every grade depends on the key, so an error there repeats for every student.
    Note the points of every part, the "choose N of M" instruction, the given data, and every figure.
 2. Solve every question part by part, the way the class learned it, starting every calculation from a formula as
    it is printed on the formula sheet (`נתונים/formulas.txt` and `עמודים/formulas/`; without one, the exam's formula
-   box, else the standard Ministry of Education sheet for the subject) and using the sheet's constants (g = 10
-   unless the sheet says otherwise). Write that formula in the part's `start_formula`. Compute every number in a
+   box, else the standard Ministry of Education sheet for the subject) and using the sheet's constants, and g = 10
+   unless the teacher or the sheet says otherwise (many sheets do not print g). Write that formula in the part's `start_formula`. Compute every number in a
    small Python file `נתונים/key_check.py` (assert each final value) so arithmetic slips cannot enter the key.
 3. If the teacher gave a key (`מחוון.pdf`), use it: transcribe it into key.json, still recompute the numbers, and
    tell the teacher about any value you think is wrong instead of silently changing it.
@@ -34,7 +34,7 @@ Every grade depends on the key, so an error there repeats for every student.
   r² = kQ/E) or a ready-made combination (a = g − qE/m instead of starting from ΣF = ma) does not. Reading a slope
   off a graph is not a formula and is not penalized. Without the class's own sheet, apply this only to clear cases
   and say so in `flags`.
-* g: note every part where the student substituted 9.8 (or another value) instead of the sheet's 10. A later part
+* g: note every part where the student substituted 9.8 (or another value) instead of the class's 10. A later part
   that only reuses a result computed with 9.8 is an error carried forward, not a new 9.8 deduction.
 
 ## 3. Points
