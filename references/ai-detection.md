@@ -38,6 +38,7 @@ one sentence.
 | Distinctive steps identical to the key or to a model's typical solution | the same unusual order of steps and the same wording |
 | Model-style errors | a value that is not in the exam (hallucinated), a figure read in left-to-right order (graph labels I↔IV swapped), a confident wrong claim with a polished explanation |
 | Typed work: model formatting left in | `**`, `###`, LaTeX like `\frac`, `$...$`, bullet structure, English words |
+| A correct result that does not follow from the student's own calculation | "350/25 = 20" where 20 is the right slope: the answer was known in advance (AI, a classmate or a solution) |
 | Same unusual errors or wording as another student | points to a shared source (AI or each other): fill `similar_to` |
 
 ## Score bands

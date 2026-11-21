@@ -28,6 +28,10 @@ Every grade depends on the key, so an error there repeats for every student.
   ("על הדפים כבר יש סימוני מורה") and grade independently.
 * If something is unreadable, do not guess in the student's disfavor: grade what you can read and add a flag
   ("עמוד 5 שורות 3-4 לא קריאות, לבדיקת המורה").
+* Recompute every step the student wrote, not only the final answer: each substitution, division and unit
+  conversion. A correct final answer after a step that cannot produce it (350/25 written as 20) still gets the
+  arithmetic deduction, on that step. If the right answer could not have come from the student's own work, add
+  it to `ai_signs` (references/ai-detection.md) and to `flags` so the teacher can ask where it came from.
 * Starting formula: for every calculation, check that the student first wrote a formula as it appears on the
   formula sheet and only then rearranged or substituted. A difference of notation only counts as the sheet's
   formula: W = −qΔV for W = qV_AB (the sheet itself defines V_AB = V_A − V_B and ΔV = V_B − V_A), Δx for d,
