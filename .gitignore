@@ -1,0 +1,28 @@
+# Never commit students' work, exams, grades or images of real pages
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.heic
+*.heif
+*.webp
+*.tif
+*.tiff
+*.bmp
+*.csv
+*.xlsx
+*.docx
+*.zip
+בדיקה/
+פתרונות/
+# the one-page guide is the only PDF that belongs in the repo
+!docs/exam-check-guide.pdf
+
+# Build output and local state
+*.html
+__pycache__/
+*.pyc
+.DS_Store
+.env
+*.local.json
+*-workspace/

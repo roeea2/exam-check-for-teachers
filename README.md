@@ -1,0 +1,172 @@
+<div align="center">
+
+<pre>
+   _______
+  /       \      ____                             _      ___
+ /  \ | /  \    |  _ \    ___     ___    ___     / \    |_ _|
+|  -- O --  |   | |_) |  / _ \   / _ \  / _ \   / _ \    | |
+ \  / | \  /    |  _ &lt;  | (_) | |  __/ |  __/  / ___ \   | |
+  \_______/     |_| \_\  \___/   \___|  \___| /_/   \_\ |___|
+</pre>
+
+# Exam Check for Teachers
+
+**A Claude Code skill that grades a class set of handwritten physics exams from scans or phone photos: a score for every student, every error circled on the student's own page with a short Hebrew reason, and an evidence-based estimate of AI use.**
+
+![License: MIT](https://img.shields.io/badge/License-MIT-4a2a7f.svg)
+![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757.svg)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg)
+![Hebrew RTL](https://img.shields.io/badge/PDF-Hebrew%20RTL-2b8a3e.svg)
+
+</div>
+
+<div dir="rtl">
+
+## מה צריך לעשות? שלושה צעדים
+
+1. **מתקינים פעם אחת.** פותחים את Claude Code בתיקייה של הפרויקט שלכם ומדביקים את הודעת ההתקנה (בהמשך העמוד).
+2. **שמים את המבחן ואת הפתרונות בתיקייה אחת.** את המבחן בתיקייה עצמה, ואת הסריקות או הצילומים של התלמידים
+   בתת-תיקייה בשם **פתרונות**: קובץ PDF אחד לכל תלמיד, או תיקייה עם הצילומים של כל תלמיד.
+3. **מבקשים בדיקה.** כותבים למשל "תבדוק את המבחנים בתיקייה בדיקות מבחן תלמידים", עונים על שתיים-שלוש שאלות,
+   ומקבלים את כל המבחנים בדוקים.
+
+כך נראית התיקייה:
+
+</div>
+
+```text
+📁 מבחן אלקטרוסטטיקה             ← תיקייה אחת לכל מבחן
+├── 📄 מבחן.pdf                   ← המבחן (PDF, Word או צילומים)
+├── 📄 מחוון.pdf                  ← לא חובה: הפתרון שלכם
+├── 📁 פתרונות                    ← העבודות של התלמידים
+│   ├── 📄 דני כהן.pdf
+│   ├── 📁 נועה לוי               ← או תיקייה עם צילומים מהטלפון
+│   └── 📄 יוסי 1.jpg, יוסי 2.jpg
+└── 📁 בדיקה                      ← כאן הסקיל שומר את התוצאות
+```
+
+<div dir="rtl">
+
+## מה מקבלים
+
+| קובץ | מה יש בו |
+|---|---|
+| 📝 `<שם התלמיד> - בדוק.pdf` | דף ציון (ציון 0-100, ניקוד לכל סעיף, כל הורדה וסיבתה), ואחריו דפי התלמיד עצמם: כל טעות מוקפת באדום, ולידה הנקודות שירדו וסיבה של 4-5 מילים |
+| 🤖 חשד לשימוש ב-AI | לכל תלמיד ציון 0-100 (100 = כמעט בוודאות נפתר עם בינה מלאכותית), עם הסימנים לכאן ולכאן, ובחשד גבוה גם שאלות לשיחה קצרה עם התלמיד |
+| 📊 `סיכום ציונים.pdf` | ממוצע, חציון, התפלגות, טבלת ציונים, הטעויות הנפוצות בכיתה, ותלמידים עם חשד ל-AI |
+| 📋 `סיכום ציונים.csv` | אותה טבלה לאקסל או לגיליון הציונים |
+| ✅ `מחוון.pdf` | המחוון שלפיו נבדק המבחן, עם הניקוד לכל סעיף |
+
+## איך זה עובד
+
+</div>
+
+```mermaid
+flowchart LR
+    A[מבחן ופתרונות בתיקייה] --> B[המרת סריקות וצילומים לעמודים]
+    B --> C[מחוון: פתרון, בדיקה בקוד ופתרון עיוור]
+    C --> D[בדיקת כל תלמיד לפי המחוון]
+    D --> E[סימון הטעויות על הדף]
+    D --> F[הערכת חשד ל-AI]
+    E --> G[PDF לכל תלמיד וסיכום כיתתי]
+    F --> G
+```
+
+<div dir="rtl">
+
+* **מחוון מאומת קודם:** כל טעות במחוון הייתה חוזרת אצל כל התלמידים, ולכן הסקיל פותר את המבחן, מוודא כל מספר
+  בקוד, ונותן לסוכן נפרד לפתור "עיוור" ולהשוות. אפשר לבקש לראות ולאשר את המחוון לפני הבדיקה.
+* **אותה טעות, אותה הורדה:** רשימת הורדות משותפת לכל הכיתה, וטעות נגררת נספרת פעם אחת בלבד.
+* **הסימון במקום הנכון:** לכל עמוד נוצרת רשת קואורדינטות, וכל טעות מסומנת לפי הרשת, ואז נבדקת בעין על הדף המוכן.
+* **בדיקת הציון:** סכום הסעיפים, הציון הסופי ואורך הסיבות נבדקים בקוד לפני שנוצר PDF.
+* **כיתה גדולה:** כל תלמיד נבדק בידי סוכן נפרד, במקביל, ואחר כך משווים את אותו סעיף בין כל התלמידים.
+
+## על ציון החשד ל-AI
+
+הציון נשען על דרך הפתרון: טעויות אישיות וחוסר עקביות, מחיקות, קיצורי דרך וסעיפים שלא הושלמו מעידים על עבודה
+עצמית; ניסוח אחיד כמו בספר, תשובות מלאות לכל בקשה, קבועים מדויקים מדי, שיטות מחוץ לחומר, וטעויות אופייניות
+למודלים מעידים על שימוש ב-AI. זו **הערכה ולא הוכחה**. בחשד גבוה הסקיל מציע שאלות לשיחה קצרה על הצעדים של
+התלמיד עצמו: מי שפתר בעצמו מסביר אותם מיד.
+
+## פרטיות
+
+עבודות התלמידים נשארות במחשב שלכם, בתוך תיקיית הפרויקט. הסקיל לא מעלה דפים או שמות לשום מקום. אם הפרויקט
+מנוהל ב-git, ודאו שתיקיית המבחנים מופיעה ב-.gitignore.
+
+## התקנה (בתוך הפרויקט, לא גלובלית)
+
+להדביק ב-Claude Code, מתוך תיקיית הפרויקט:
+
+</div>
+
+```text
+התקן בפרויקט הזה את הסקיל exam-check-for-teachers: שכפל את https://github.com/roeea2/exam-check-for-teachers
+לתוך התיקייה .claude/skills/exam-check-for-teachers של הפרויקט (לא בהתקנה גלובלית), ובדוק ש-Python 3.10+,
+Google Chrome ו-poppler מותקנים. אמור לי אם חסר משהו.
+```
+
+<div dir="rtl">
+
+או מהטרמינל, מתוך תיקיית הפרויקט:
+
+</div>
+
+```bash
+git clone https://github.com/roeea2/exam-check-for-teachers.git .claude/skills/exam-check-for-teachers
+```
+
+<div dir="rtl">
+
+אחר כך פותחים מחדש את Claude Code בתיקיית הפרויקט. מדריך של עמוד אחד להדפסה:
+[docs/exam-check-guide.pdf](docs/exam-check-guide.pdf).
+
+## שימוש
+
+</div>
+
+```text
+תבדוק את המבחנים בתיקייה "מבחן אלקטרוסטטיקה"
+תבדוק את המבחנים לפי המחוון שבתיקייה, בהקפדה כמו בבגרות
+תבדוק אם התלמיד בתיקייה הזו השתמש ב-AI במבחן
+/exam-check-for-teachers
+```
+
+<div dir="rtl">
+
+רוצים לשנות? כותבים במילים פשוטות, למשל "בשאלה 2א תוריד רק נקודה אחת לכולם", והסקיל מעדכן את כל התלמידים
+ובונה מחדש את הקבצים.
+
+## דרישות
+
+Python 3.10 ומעלה · Google Chrome או Chromium · poppler (`pdftoppm`, `pdftotext`, `pdfinfo`) · חיבור לאינטרנט
+בזמן הבנייה (הגופן Heebo). צילומי HEIC מומרים עם `sips` של macOS; מבחן ב-Word צריך LibreOffice (או לשמור כ-PDF).
+
+## מבנה המאגר
+
+</div>
+
+```text
+SKILL.md                     ההוראות ל-Claude: התיקייה, השאלות, המחוון, הבדיקה, הדוחות
+scripts/find_exam.py         מאתר את המבחן, המחוון והעבודות של כל תלמיד
+scripts/prepare_pages.py     ממיר סריקות וצילומים לעמודים ויוצר רשת קואורדינטות
+scripts/annotate.py          בודק את הציון ובונה PDF עם הטעויות מסומנות על הדף
+scripts/report.py            סיכום כיתתי (PDF ו-CSV) והמחוון כ-PDF
+references/                  כללי ניקוד, סימון, זיהוי AI ומבני הנתונים
+docs/                        מדריך של עמוד אחד
+```
+
+## In English
+
+Exam Check for Teachers is a project-scoped [Claude Code](https://claude.com/claude-code) skill for physics
+teachers who grade in Hebrew. The teacher puts one exam and many students' scanned or photographed solutions in a
+folder. The skill builds an answer key and verifies it (every number recomputed in code, plus an independent blind
+solve), grades each student by the exam's points with consistent deductions and error-carried-forward, circles
+every error on the student's own page with the points and a 4-5 word Hebrew reason, and estimates for each student
+how likely the exam was solved with an AI model (0-100, with the evidence and questions for a short talk). It
+writes a marked PDF per student and a class summary (PDF and CSV). Student work never leaves the teacher's machine.
+Install it inside a project with
+`git clone https://github.com/roeea2/exam-check-for-teachers.git .claude/skills/exam-check-for-teachers`.
+
+## License
+
+[MIT](LICENSE) © 2026 RoeeAI.
