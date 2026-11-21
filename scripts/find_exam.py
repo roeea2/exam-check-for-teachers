@@ -36,6 +36,7 @@ GENERIC_RX = re.compile(r"^(?:img|dsc|pxl|dcim|whatsapp|photo|image|screenshot|c
 CAMERA_RX = re.compile(r"^(?:img|dsc|pxl|dcim|whatsapp|photo|image|screenshot)[\s_\-]", re.I)
 PAGE_SUFFIX_RX = re.compile(r"(?:[\s_\-]+(?:עמוד|עמ'?|page|p)?[\s_\-]*|(?:עמוד|page)\s*)\d{1,2}$", re.I)
 SKIP_DIRS = {OUT_DIR, "מקור", "__pycache__"}
+BUNDLED_SHEET = Path(__file__).resolve().parent.parent / "assets" / "physics-formula-sheet-2027.pdf"
 
 
 def is_doc(p):
@@ -167,12 +168,16 @@ def main():
         elif files:
             students.append(student(d.name, [f for f in d.rglob("*") if is_doc(f)], warnings))
 
+    bundled = False
+    if not formulas and BUNDLED_SHEET.exists():
+        formulas, bundled = [BUNDLED_SHEET], True             # the Ministry of Education sheet that ships with the skill
     rel = lambda p: str(Path(p).resolve().relative_to(folder)) if Path(p).resolve().is_relative_to(folder) else str(p)
     result = {
         "folder": str(folder),
         "exam": {"files": [rel(p) for p in exam], "text_layer": bool(exam) and has_text_layer(exam[0])},
         "key": {"files": [rel(p) for p in key]},
-        "formulas": {"files": [rel(p) for p in formulas], "text_layer": bool(formulas) and has_text_layer(formulas[0])},
+        "formulas": {"files": [rel(p) for p in formulas], "text_layer": bool(formulas) and has_text_layer(formulas[0]),
+                     "bundled": bundled},
         "students": [{"id": f"s{i:02d}", "name": s["name"], "label": s["label"], "name_from_page": s["name_from_page"],
                       "files": [rel(f) for f in s["files"]]} for i, s in enumerate(students, 1)],
         "warnings": warnings,
@@ -182,7 +187,10 @@ def main():
     print(f"exam:     {', '.join(result['exam']['files']) or '(not found)'}"
           f"{'  [text layer]' if result['exam']['text_layer'] else ''}")
     print(f"key:      {', '.join(result['key']['files']) or '(none: build one)'}")
-    print(f"formulas: {', '.join(result['formulas']['files']) or '(no formula sheet: use the exam\'s formula box or ask the teacher)'}")
+    if bundled:
+        print("formulas: none in the folder; using the bundled Ministry of Education physics formula sheet (2027)")
+    else:
+        print(f"formulas: {', '.join(result['formulas']['files']) or '(no formula sheet: use the exam\'s formula box or ask the teacher)'}")
     print(f"students: {len(students)}")
     for s in result["students"]:
         who = s["name"] or f"(name from the first page; file: {s['label']})"

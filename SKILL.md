@@ -98,8 +98,9 @@ python3 scripts/prepare_pages.py "<exam folder>"    # page images + locator grid
 Tell the teacher in one or two Hebrew lines what was found: the exam, the formula sheet, the key, how many
 students. Ask for anything missing before going on:
 * no exam: which file it is (rerun with `--exam FILE`);
-* no formula sheet: add it to the folder (a file or folder with "נוסחאות" or "נוסחאון" in its name), or confirm the exam's own formula box or the standard Ministry of
-  Education sheet for the subject (then the formula-sheet rule applies only to clear cases);
+* no formula sheet in the folder: find_exam.py falls back to the Ministry of Education physics formula sheet
+  (2027) that ships with the skill (`assets/physics-formula-sheet-2027.pdf`). Tell the teacher, and if the class
+  uses another sheet, ask them to add it (a file or folder with "נוסחאות" or "נוסחאון" in its name);
 * photos that cannot be grouped by student: put each student's photos in a folder named after the student.
 
 Look at the exam's first page to see whether it says "choose N of M" (for round 3).
@@ -154,6 +155,7 @@ everyone), rerun `annotate.py` for the affected students and `report.py summary`
 * `scripts/prepare_pages.py`: page images (any scan size, photos, HEIC, Word) and percent locator grids.
 * `scripts/annotate.py`: validate a grading JSON and build the marked PDF (cover page, circled errors, talk questions).
 * `scripts/report.py`: class summary PDF and CSV, and the key as a PDF.
-* `scripts/common.py`: folders, Chrome printing, poppler rendering.
+* `scripts/common.py`: folders, Chrome printing, poppler rendering, formulas kept left-to-right in Hebrew.
+* `assets/physics-formula-sheet-2027.pdf`: the Ministry of Education physics formula sheet, the default sheet.
 * `references/grading.md` (key, points, reasons, grader subagents), `references/marking.md` (boxes and checking),
   `references/ai-detection.md` (signs, score bands, talk questions), `references/schemas.md` (JSON formats).

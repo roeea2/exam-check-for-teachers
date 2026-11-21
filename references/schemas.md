@@ -6,7 +6,8 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
 ## files.json and pages.json (written by the scripts)
 
 `find_exam.py` writes `files.json`: `exam.files`, `exam.text_layer`, `key.files`, `formulas.files` (the formula
-sheet, a file or a folder with "נוסחאות" or "נוסחאון" in its name), and `students`, each with
+sheet, a file or a folder with "נוסחאות" or "נוסחאון" in its name; `formulas.bundled` is true when the folder had
+none and the skill's own Ministry of Education sheet is used), and `students`, each with
 `id` (s01, s02 ...), `name` (empty when the file name is generic, then read it from the first page), `label`
 (file or folder name) and `files`. `prepare_pages.py` writes `pages.json`: document id to page images.
 

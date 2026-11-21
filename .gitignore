@@ -17,6 +17,8 @@
 פתרונות/
 # the one-page guide is the only PDF that belongs in the repo
 !docs/exam-check-guide.pdf
+# the Ministry of Education physics formula sheet, used when a teacher's folder has none
+!assets/physics-formula-sheet-2027.pdf
 
 # Build output and local state
 *.html
