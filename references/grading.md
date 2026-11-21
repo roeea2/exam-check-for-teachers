@@ -29,9 +29,11 @@ Every grade depends on the key, so an error there repeats for every student.
 * If something is unreadable, do not guess in the student's disfavor: grade what you can read and add a flag
   ("עמוד 5 שורות 3-4 לא קריאות, לבדיקת המורה").
 * Starting formula: for every calculation, check that the student first wrote a formula as it appears on the
-  formula sheet and only then rearranged or substituted. Printed variants that are both on the sheet count (σ/2ε₀
-  and 2πkσ, since ε₀ = 1/4πk is printed too). A rearranged form written straight away (σ = E·ε₀, Q = V·r/k,
-  r² = kQ/E) or a ready-made combination (a = g − qE/m instead of starting from ΣF = ma) does not. Reading a slope
+  formula sheet and only then rearranged or substituted. A difference of notation only counts as the sheet's
+  formula: W = −qΔV for W = qV_AB (the sheet itself defines V_AB = V_A − V_B and ΔV = V_B − V_A), Δx for d,
+  σ/2ε₀ for 2πkσ (ε₀ = 1/4πk is printed too). What does not count is a formula already solved for another
+  quantity (V = E·d when the sheet has E = V_AB/d, σ = E·ε₀, Q = V·r/k, r² = kQ/E) or a ready-made
+  combination (a = g − qE/m instead of starting from ΣF = ma). Reading a slope
   off a graph is not a formula and is not penalized. Without the class's own sheet, apply this only to clear cases
   and say so in `flags`.
 * g: note every part where the student substituted 9.8 (or another value) instead of the class's 10. A later part
