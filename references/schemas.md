@@ -16,8 +16,19 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
   "title": "מבחן מסכם אלקטרוסטטיקה יב",
   "n_questions": 4,
   "choose": 3,
-  "policy": {"strictness": "bagrut", "extra_questions": "best", "carry_forward": true,
-             "summary": "בדיקה כמו בבגרות: הורדה על חוסר נימוק ויחידות, טעות נגררת נספרת פעם אחת."},
+  "policy": {
+    "extra_questions": "best",
+    "carry_forward": true,
+    "rules": [
+      {"case": "חוסר נימוק כשהשאלה ביקשה לנמק", "deduct": "חצי מהסעיף"},
+      {"case": "טעות חישוב כשהדרך נכונה", "deduct": "נקודה אחת"},
+      {"case": "יחידות חסרות או שגויות בתשובה הסופית", "deduct": "חצי נקודה"},
+      {"case": "טעות נגררת", "deduct": "רק במקום שבו נעשתה"},
+      {"case": "תשובה סופית נכונה בלי דרך", "deduct": "חצי מהסעיף"},
+      {"case": "מספר, נוסחה או צעד בלי הסבר", "deduct": "נקודה אחת"}
+    ],
+    "summary": "כללי ההורדה שבחר/ה המורה לפני הבדיקה. מקרים אחרים לפי טבלת ברירת המחדל."
+  },
   "questions": [
     {"q": 3, "topic": "כדור מוליך וקליפה", "max": 33.33,
      "parts": [
@@ -35,7 +46,11 @@ All files live in `<exam folder>/בדיקה/נתונים/`. Write them with `ens
 
 * `max` of a part: the points printed in the exam. When the exam prints only per-question points, split them
   sensibly and say so in `notes`.
-* `common_deductions` grows while you grade: the same mistake gets the same deduction for every student.
+* `policy.rules`: the teacher's answers from SKILL.md section 2, in Hebrew, one rule per case (a custom rule
+  typed in "Other" goes in as written). `extra_questions` is `best` or `first`; `carry_forward` false means
+  the teacher wants a carried-forward error deducted in every part. `report.py key` prints the rules.
+* `common_deductions` grows while you grade: the same mistake gets the same deduction for every student, and
+  its points must follow `policy.rules`.
 * `answer` holds the final values; keep the computation that proves them in `key_check.py` next to it.
 
 ## <id>.json, one per student (you or a grader subagent write it)

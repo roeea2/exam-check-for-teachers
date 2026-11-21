@@ -161,9 +161,15 @@ def key_pdf(folder):
         qs.append(f'<div class="q"><h2 style="margin-top:0">שאלה {esc(q["q"])}{topic} ({fmt(q["max"])} נק\')</h2>{"".join(parts)}</div>')
     pol = key.get("policy", {})
     notes = "".join(f"<li>{esc(n)}</li>" for n in key.get("notes", []))
+    rules = [(r.get("case", ""), r.get("deduct", "")) for r in pol.get("rules", [])]
+    extra = {"best": "נספרות השאלות הטובות ביותר", "first": "נספרות השאלות הראשונות לפי הסדר"}.get(pol.get("extra_questions"))
+    if extra:
+        rules.append(("תלמיד שענה על יותר שאלות מהנדרש", extra))
+    rules_html = ("<h2>כללי הורדת הניקוד</h2><table><tr><th>מצב</th><th>הורדה</th></tr>"
+                  + "".join(f"<tr><td>{esc(c)}</td><td>{esc(d)}</td></tr>" for c, d in rules) + "</table>") if rules else ""
     body = f"""<h1>מחוון{(": " + esc(key.get('title'))) if key.get('title') else ""}</h1>
 <div class="sub">המחוון שלפיו נבדקו המבחנים. {esc(pol.get('summary', ''))}</div>
-{f"<ul>{notes}</ul>" if notes else ""}{"".join(qs)}"""
+{rules_html}{f"<ul>{notes}</ul>" if notes else ""}{"".join(qs)}"""
     pdf = out_dir(folder) / "מחוון.pdf"
     html_to_pdf(f'<!doctype html><html lang="he"><head><meta charset="utf-8"><title>מחוון</title>{FONTS}'
                 f'<style>{CSS}</style></head><body>{body}</body></html>', data_dir(folder) / "key.html", pdf)

@@ -28,23 +28,30 @@ Every grade depends on the key, so an error there repeats for every student.
 
 ## 3. Points
 
-Default policy is bagrut style; follow what the teacher chose.
+The points of a part come from the exam. A part starts at full points; every deduction is subtracted; the part
+never goes below 0. A question is the sum of its parts; the grade is the sum of the counted questions, rounded.
 
-| Situation | Deduction (of the part's points) |
+The teacher's rules come first: apply `policy.rules` from key.json exactly (they were asked in SKILL.md
+section 2). For every case the teacher was not asked about, or answered "(מומלץ)", use this default table
+(bagrut style). The README shows the same table to teachers, so keep the two in step.
+
+| Situation | Default deduction |
 |---|---|
-| Correct method and answer, full explanation | none |
-| Correct answer, the explanation asked for ("נמקו", "הסבירו") is missing or thin | 25-50% |
-| A number or step without saying where it came from | 1 point |
-| Arithmetic slip, method correct | 1-2 points (about 20%) |
-| Missing or wrong units in the final answer | 0.5-1 point |
+| The explanation asked for ("נמקו", "הסבירו") is missing | half of the part |
+| Arithmetic slip, method correct | 1 point |
+| Missing or wrong units in the final answer | 0.5 point |
+| A number, formula or step without saying where it came from | 1 point |
+| Error carried forward from an earlier part | only where it was made |
+| Correct final answer with no work or calculation | half of the part |
 | Wrong sign or direction when the question asks for it | 1-2 points |
-| Right idea, wrong formula or a misread given value | 50-75% |
-| Part of the question not answered (e.g. the direction, or the time) | the share of that request |
-| Wrong answer, no relevant work | all of the part |
-| Part not answered at all | all of the part |
+| Right idea, wrong formula or a misread given value | half to three quarters of the part |
+| Part of the request not answered (the direction, the time) | that request's share of the part |
+| A choice (multiple choice, true/false) without the explanation asked for | up to half of the part |
+| Wrong answer, no relevant work | the whole part |
+| Part not answered at all | the whole part |
 
-* Error carried forward (טעות נגררת): a wrong value from an earlier part used correctly later is penalized only
-  once, where it was made. Check the later part with the student's own value.
+* Error carried forward (טעות נגררת): unless the teacher chose otherwise, a wrong value from an earlier part used
+  correctly later is penalized only once, where it was made. Check the later part with the student's own value.
 * A different correct method gets full credit.
 * Multiple-choice and true/false with a required explanation: the choice alone is worth at most half.
 * "Choose N of M": count `extra_questions` as the teacher chose: `best` (default) or `first` (in the order
@@ -73,7 +80,7 @@ then validate and spot-check. Prompt template:
 You are grading one student's Hebrew physics exam for a teacher. Work only from these files:
   exam text:      <folder>/בדיקה/נתונים/exam.txt  (may be missing for a scanned exam)
   exam pages:     <folder>/בדיקה/עמודים/exam/p01.jpg ...
-  answer key:     <folder>/בדיקה/נתונים/key.json   (points, answers, common deductions)
+  answer key:     <folder>/בדיקה/נתונים/key.json   (points, answers, the teacher's deduction rules, common deductions)
   student pages:  <folder>/בדיקה/עמודים/<id>/p01.jpg ...  and locator grids grid-p01.png ...
 Read <skill>/references/grading.md, <skill>/references/marking.md, <skill>/references/ai-detection.md and
 <skill>/references/schemas.md first and follow them exactly.

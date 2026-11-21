@@ -30,18 +30,9 @@ or names anywhere, and if the workspace is a git repository make sure the exam f
 
 Student files lying next to the exam also work. All output goes to `<exam folder>/בדיקה/`.
 
-## 1. Ask (one AskUserQuestion call, in Hebrew, only what is not already known)
-
-1. "יש מחוון (פתרון של המורה)?": "כן, הוא בתיקייה" / "לא, תבנה מחוון ותראה לי לפני הבדיקה (מומלץ)" /
-   "לא, תבנה ותבדוק בלי לעצור".
-2. "רמת הקפדה": "כמו בבגרות: הורדה על חוסר נימוק ויחידות (מומלץ)" / "מקלה: רק טעויות פיזיקה וחישוב".
-3. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר" /
-   "לספור את הראשונות לפי הסדר".
+## 1. Find and prepare the files
 
 If you do not know the folder, look for one with an exam and students' work in the workspace, or ask for it.
-The AI check always runs; it is part of every report.
-
-## 2. Find and prepare the files
 
 ```
 python3 scripts/find_exam.py "<exam folder>"        # exam, key, students -> בדיקה/נתונים/files.json
@@ -49,7 +40,34 @@ python3 scripts/prepare_pages.py "<exam folder>"    # page images + locator grid
 ```
 
 Read the warnings. If the exam was not found or photos cannot be grouped by student, ask the teacher (or rerun
-with `--exam FILE`). Tell the teacher in one line how many students were found.
+with `--exam FILE`). Look at the exam's first page to see whether it says "choose N of M". Tell the teacher in one
+line how many students were found.
+
+## 2. Ask the teacher how to grade, before reading any student's work
+
+A grade is only as fair as its rules, and the rules are the teacher's call. Ask in two AskUserQuestion calls, in
+Hebrew, before you grade anything; skip only what the teacher already said. Each question offers the usual rule
+first, marked "(מומלץ)", and the teacher can type a rule of their own in "Other" (for example "חוסר נימוק: 2 נקודות").
+
+Round 1:
+1. "יש מחוון (פתרון של המורה)?": "לא, תבנה מחוון ותראה לי לפני הבדיקה (מומלץ)" / "לא, תבנה ותבדוק בלי
+   לעצור" / "כן, הוא בתיקייה" (put this one first when find_exam.py found a key).
+2. "כמה להוריד כשחסר נימוק בסעיף שביקש לנמק?": "חצי מהסעיף (מומלץ)" / "רבע מהסעיף" / "את כל הסעיף".
+3. "כמה להוריד על טעות חישוב כשהדרך נכונה?": "נקודה אחת (מומלץ)" / "2 נקודות" / "רבע מהסעיף".
+4. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר
+   (מומלץ)" / "לספור את הראשונות לפי הסדר במחברת". Otherwise ask round 2's first question here.
+
+Round 2:
+1. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
+2. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
+   סעיף שבו היא מופיעה".
+3. "תשובה סופית נכונה בלי דרך או חישוב": "חצי מהסעיף (מומלץ)" / "ניקוד מלא" / "אפס".
+4. "מספר, נוסחה או צעד בלי הסבר מאיפה הגיעו": "נקודה אחת (מומלץ)" / "לא להוריד".
+
+Write the answers into key.json `policy` (`rules`, `extra_questions`, `carry_forward`; references/schemas.md),
+confirm them to the teacher in two or three Hebrew lines, and apply them to every student. Cases the teacher was
+not asked about follow the default table in references/grading.md section 3. The AI check always runs; it is part
+of every report.
 
 ## 3. Build and verify the key
 
