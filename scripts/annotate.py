@@ -214,11 +214,14 @@ def cover(st, key):
     lst = lambda xs: "".join(f"<li>{bidi(x)}</li>" for x in xs) or "<li>-</li>"
     flags = st.get("flags", [])
     flags_html = (f'<div class="flags"><b>לבדיקת המורה:</b><ul>{lst(flags)}</ul></div>') if flags else ""
+    mode = {"full_work": "נבדקו התשובה הסופית וגם דרך החישוב.",
+            "answer_first": "תשובה נכונה קיבלה ניקוד מלא; הדרך נבדקה לניקוד חלקי.",
+            "final_answer": "נבדקה רק התשובה הסופית."}.get(((key or {}).get("policy") or {}).get("grading_mode"), "")
     who = esc(st.get("student") or st.get("label") or st.get("id"))
     cls = f'<div>כיתה: {esc(st["class"])}</div>' if st.get("class") else ""
     return f"""<div class="cover">
   <h1>בדיקת מבחן{(": " + esc(title)) if title else ""}</h1>
-  <div class="sub">נבדק בעזרת Claude לפי מחוון. הסימונים באדום מופיעים על דפי התלמיד בעמודים הבאים.</div>
+  <div class="sub">נבדק בעזרת Claude לפי מחוון. {mode} הסימונים באדום מופיעים על דפי התלמיד בעמודים הבאים.</div>
   <div class="top"><div class="score"><b>{esc(st["total"])}</b><span>מתוך 100</span></div>
     <div class="who"><div><b>{who}</b></div>{cls}<div>שאלות שנספרו: {", ".join(esc(c) for c in counted)}</div></div></div>
   <table><tr><th style="width:22%">שאלה</th><th style="width:14%">סעיף</th><th>ניקוד</th><th>הורדות</th></tr>{"".join(rows)}</table>

@@ -42,8 +42,10 @@ Round 1:
    אחת (אכתוב את שמה)" / "אכתוב איפה כל קובץ נמצא".
 2. "יש מחוון (פתרון של המורה)?": "לא, תבנה מחוון ותראה לי לפני הבדיקה (מומלץ)" / "לא, תבנה ותבדוק בלי
    לעצור" / "כן, אשים אותו בתיקייה עם המבחן".
-3. "כמה להוריד כשחסר נימוק בסעיף שביקש לנמק?": "חצי מהסעיף (מומלץ)" / "רבע מהסעיף" / "את כל הסעיף".
-4. "כמה להוריד על טעות חישוב כשהדרך נכונה?": "נקודה אחת (מומלץ)" / "2 נקודות" / "רבע מהסעיף".
+3. "מה לבדוק: רק את התשובה הסופית, או גם את דרך החישוב?": "גם את דרך החישוב: כל שלב נבדק (מומלץ)" /
+   "קודם התשובה: תשובה נכונה מקבלת ניקוד מלא, והדרך נבדקת רק לניקוד חלקי כשהתשובה שגויה" / "רק את התשובה
+   הסופית: נכון או לא נכון".
+4. "כמה להוריד כשחסר נימוק בסעיף שביקש לנמק?": "חצי מהסעיף (מומלץ)" / "רבע מהסעיף" / "את כל הסעיף".
 
 Then get the files in place (answer to question 1):
 * "תפתח לי תיקייה": pick a short Hebrew name from the request (subject and class), run
@@ -59,21 +61,29 @@ If the workspace is a git repository, add the exam folder to its .gitignore befo
 Then run step 2, and only after it ask rounds 2 and 3.
 
 Round 2:
-1. "תלמיד שלא התחיל מהנוסחה כפי שהיא מופיעה בדף הנוסחאות (הציב ישר בנוסחה מסודרת מחדש)": "נקודה אחת בכל
-   סעיף (מומלץ)" / "חצי נקודה בכל סעיף" / "לא להוריד".
-2. "שימוש ב-g = 9.8 במקום 10 (הערך המקובל בכיתה)": "נקודה אחת בכל סעיף שבו הוצב (מומלץ)" / "נקודה אחת,
+1. "כמה להוריד על טעות חישוב כשהדרך נכונה?": "נקודה אחת (מומלץ)" / "2 נקודות" / "רבע מהסעיף".
+2. "תלמיד שלא התחיל מהנוסחה כפי שהיא מופיעה בדף הנוסחאות (הציב ישר בנוסחה שכבר נפתרה למשתנה אחר)":
+   "נקודה אחת בכל סעיף (מומלץ)" / "חצי נקודה בכל סעיף" / "לא להוריד".
+3. "שימוש ב-g = 9.8 במקום 10 (הערך המקובל בכיתה)": "נקודה אחת בכל סעיף שבו הוצב (מומלץ)" / "נקודה אחת,
    פעם אחת בכל המבחן" / "לא להוריד".
-3. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
-4. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
-   סעיף שבו היא מופיעה".
+4. "יחידות חסרות או שגויות בתשובה הסופית": "חצי נקודה (מומלץ)" / "נקודה אחת" / "לא להוריד".
 
 Round 3:
-1. "תשובה סופית נכונה בלי דרך או חישוב": "חצי מהסעיף (מומלץ)" / "ניקוד מלא" / "אפס".
-2. "מספר או צעד בלי הסבר מאיפה הגיעו": "נקודה אחת (מומלץ)" / "לא להוריד".
-3. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר
+1. "טעות נגררת (שימוש נכון בתוצאה שגויה מסעיף קודם)": "להוריד רק במקום שבו נעשתה (מומלץ)" / "להוריד בכל
+   סעיף שבו היא מופיעה".
+2. "תשובה סופית נכונה בלי דרך או חישוב": "חצי מהסעיף (מומלץ)" / "ניקוד מלא" / "אפס".
+3. "מספר או צעד בלי הסבר מאיפה הגיעו": "נקודה אחת (מומלץ)" / "לא להוריד".
+4. Only if the exam says "choose N of M": "תלמיד שענה על יותר שאלות מהנדרש": "לספור את הטובות ביותר
    (מומלץ)" / "לספור את הראשונות לפי הסדר במחברת".
 
-Write the answers into key.json `policy` (`rules`, `extra_questions`, `carry_forward`; references/schemas.md),
+If the teacher chose "רק את התשובה הסופית", skip the questions about the work (round 2 questions 1-2 and round 3
+questions 1-3): a part is right (full points) or wrong (zero), and a part that asks to explain is graded on the
+explanation, which is its answer. With "קודם התשובה", ask everything: the method rules decide the partial credit
+of a wrong answer. In every mode, a right final answer that does not follow from the written work still goes to
+`flags` and to `ai_signs`.
+
+Write the answers into key.json `policy` (`grading_mode`, `rules`, `extra_questions`, `carry_forward`;
+references/schemas.md),
 confirm them to the teacher in two or three Hebrew lines, and apply them to every student. Cases the teacher was
 not asked about follow the default table in references/grading.md section 3. The AI check always runs; it is part
 of every report.

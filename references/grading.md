@@ -28,7 +28,7 @@ Every grade depends on the key, so an error there repeats for every student.
   ("על הדפים כבר יש סימוני מורה") and grade independently.
 * If something is unreadable, do not guess in the student's disfavor: grade what you can read and add a flag
   ("עמוד 5 שורות 3-4 לא קריאות, לבדיקת המורה").
-* Recompute every step the student wrote, not only the final answer: each substitution, division and unit
+* Recompute every step the student wrote (in `full_work` and `answer_first` modes), not only the final answer: each substitution, division and unit
   conversion. A correct final answer after a step that cannot produce it (350/25 written as 20) still gets the
   arithmetic deduction, on that step. If the right answer could not have come from the student's own work, add
   it to `ai_signs` (references/ai-detection.md) and to `flags` so the teacher can ask where it came from.
@@ -47,6 +47,14 @@ Every grade depends on the key, so an error there repeats for every student.
 
 The points of a part come from the exam. A part starts at full points; every deduction is subtracted; the part
 never goes below 0. A question is the sum of its parts; the grade is the sum of the counted questions, rounded.
+
+Grading mode (`policy.grading_mode`, asked first):
+* `full_work` (default): every written step is checked and the deductions below apply.
+* `answer_first`: a correct final answer gets the part's full points; the work is graded with the deductions
+  below only to give partial credit to a wrong answer.
+* `final_answer`: a part is right (full points) or wrong (zero); a part that asks to explain is graded on the
+  explanation, which is its answer. Units and g still follow the teacher's rules, because they change the answer.
+In every mode, a right final answer that does not follow from the written work goes to `flags` and `ai_signs`.
 
 The teacher's rules come first: apply `policy.rules` from key.json exactly (they were asked in SKILL.md
 section 2). For every case the teacher was not asked about, or answered "(מומלץ)", use this default table

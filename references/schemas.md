@@ -18,6 +18,7 @@ sheet, a file or a folder with "נוסחאות" or "נוסחאון" in its name)
   "n_questions": 4,
   "choose": 3,
   "policy": {
+    "grading_mode": "full_work",
     "extra_questions": "best",
     "carry_forward": true,
     "rules": [
@@ -50,6 +51,8 @@ sheet, a file or a folder with "נוסחאות" or "נוסחאון" in its name)
 
 * `max` of a part: the points printed in the exam. When the exam prints only per-question points, split them
   sensibly and say so in `notes`.
+* `policy.grading_mode`: `full_work` (every step checked), `answer_first` (a right answer gets full points, the
+  work decides partial credit for a wrong one) or `final_answer` (right or wrong only).
 * `policy.rules`: the teacher's answers from SKILL.md section 2, in Hebrew, one rule per case (a custom rule
   typed in "Other" goes in as written). `extra_questions` is `best` or `first`; `carry_forward` false means
   the teacher wants a carried-forward error deducted in every part. `report.py key` prints the rules.

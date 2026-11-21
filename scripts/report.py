@@ -42,6 +42,10 @@ td.c { text-align: center; white-space: nowrap; }
 .small { font-size: 8.8pt; color: #666; }
 """
 
+MODES = {"full_work": "התשובה הסופית וגם דרך החישוב, כל שלב",
+         "answer_first": "קודם התשובה: נכונה מקבלת ניקוד מלא, הדרך קובעת ניקוד חלקי לתשובה שגויה",
+         "final_answer": "רק התשובה הסופית: נכון או לא נכון"}
+
 BUCKETS = [(0, 54, "0-54"), (55, 64, "55-64"), (65, 74, "65-74"), (75, 84, "75-84"), (85, 100, "85-100")]
 
 
@@ -163,6 +167,9 @@ def key_pdf(folder):
     pol = key.get("policy", {})
     notes = "".join(f"<li>{bidi(n)}</li>" for n in key.get("notes", []))
     rules = [(r.get("case", ""), r.get("deduct", "")) for r in pol.get("rules", [])]
+    mode = MODES.get(pol.get("grading_mode"))
+    if mode:
+        rules.insert(0, ("מה נבדק", mode))
     extra = {"best": "נספרות השאלות הטובות ביותר", "first": "נספרות השאלות הראשונות לפי הסדר"}.get(pol.get("extra_questions"))
     if extra:
         rules.append(("תלמיד שענה על יותר שאלות מהנדרש", extra))
